@@ -7,6 +7,7 @@ import billmgr.exception
 import billmgr.logger as logging
 
 import xml.etree.ElementTree as ET
+import tinkoffapi
 
 MODULE = 'payment'
 logging.init_logging('pmtestpayment')
@@ -36,6 +37,8 @@ class TestPaymentModule(payment.PaymentModule):
         terminalpsw_node = xml.find('./terminalpsw')
         terminalkey = terminalkey_node.text if terminalkey_node is not None else ''
         terminalpsw = terminalpsw_node.text if terminalpsw_node is not None else ''
+        
+
 
         if terminalkey != 'rick' or terminalpsw != 'morty':
             raise billmgr.exception.XmlException('wrong_terminal_info')

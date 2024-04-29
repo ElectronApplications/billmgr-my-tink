@@ -4,6 +4,7 @@ import payment
 import sys
 
 import billmgr.logger as logging
+import tinkoffapi
 
 MODULE = 'payment'
 logging.init_logging('testpayment')
