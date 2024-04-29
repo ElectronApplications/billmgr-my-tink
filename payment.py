@@ -1,3 +1,6 @@
+import os
+os.chdir("/usr/local/mgr5")
+
 from abc import ABC, abstractmethod
 from billmgr.misc import MgrctlXml
 import billmgr.db
