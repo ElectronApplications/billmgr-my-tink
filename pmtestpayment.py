@@ -53,7 +53,7 @@ class TestPaymentModule(payment.PaymentModule):
         for p in payments:
             logger.info(f"change status for payment {p['id']}")
             
-            xmlparams = ET.parse(p['xmlparams'])
+            xmlparams = ET.ElementTree(ET.fromstring(p['xmlparams']))
             terminalkey_node = xmlparams.find('./terminalkey')
             terminalpsw_node = xmlparams.find('./terminalpsw')
             terminalkey = terminalkey_node.text if terminalkey_node is not None else ''
