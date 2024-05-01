@@ -70,6 +70,8 @@ class TestPaymentModule(payment.PaymentModule):
                     payment.set_canceled(p['id'], p['info'], p['externalid'])
                 elif result.status == "CONFIRMED":
                     payment.set_paid(p['id'], p['info'], p['externalid'])
+                else:
+                    payment.set_canceled(p['id'], p['info'], p['externalid'])
             else:
                 payment.set_canceled(p['id'], p['info'], p['externalid'])
 
