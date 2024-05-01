@@ -17,16 +17,23 @@ class TestPaymentCgi(payment.PaymentCgi):
         logger.info(f"paymethod_params = {self.paymethod_params}")
         logger.info(f"payment_params = {self.payment_params}")
 
+        terminalkey = self.paymethod_params["terminalkey"]
+        terminalpsw = self.paymethod_params["terminalpsw"]
+
+        # тут float приходит в рублях, а нужен int в копейках
+        amount_f = self.payment_params["paymethodamount"]
+        amount = int(amount_f * 100)
+
+        request_result = tinkoffapi.init_standard(terminalkey, terminalpsw, amount, self.elid, "Оплата Test", self.success_page, self.fail_page)
+
         # переводим платеж в статус оплачивается
-        payment.set_in_pay(self.elid, '', 'external_' + self.elid)
+        if request_result.success:
+            payment.set_in_pay(self.elid, request_result.to_json(), request_result.payment_id)
+        else:
+            payment.set_canceled(self.elid, request_result.to_json(), "")
 
-        # url для перенаправления c cgi
-        # здесь, в тестовом примере сразу перенаправляем на страницу BILLmanager
-        # должны перенаправлять на страницу платежной системы
-        redirect_url = self.pending_page;
+        redirect_url = request_result.paymentURL if request_result.success else self.fail_page
 
-        # формируем html и отправляем в stdout
-        # таким образом переходим на redirect_url
         payment_form =  "<html>\n";
         payment_form += "<head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>\n"
         payment_form += "<link rel='shortcut icon' href='billmgr.ico' type='image/x-icon' />"
@@ -41,6 +48,6 @@ class TestPaymentCgi(payment.PaymentCgi):
         payment_form += "</html>\n";
 
         sys.stdout.write(payment_form)
-
+            
 
 TestPaymentCgi().Process()

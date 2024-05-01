@@ -24,9 +24,6 @@ class TestPaymentModule(payment.PaymentModule):
 
         self.params[payment.PAYMENT_PARAM_PAYMENT_SCRIPT] = "/mancgi/testpayment"
 
-
-    # в тестовом примере валидация проходит успешно, если
-    # Идентификатор терминала = rick, пароль терминала = morty
     def PM_Validate(self, xml : ET.ElementTree):
         logger.info("run pmvalidate")
 
@@ -37,12 +34,8 @@ class TestPaymentModule(payment.PaymentModule):
         terminalpsw_node = xml.find('./terminalpsw')
         terminalkey = terminalkey_node.text if terminalkey_node is not None else ''
         terminalpsw = terminalpsw_node.text if terminalpsw_node is not None else ''
-        
 
-
-        if terminalkey != 'rick' or terminalpsw != 'morty':
-            raise billmgr.exception.XmlException('wrong_terminal_info')
-
+        # TODO: проверка валидности терминала?
 
     # в тестовом примере получаем необходимые платежи
     # и переводим их все в статус 'оплачен'
@@ -52,14 +45,30 @@ class TestPaymentModule(payment.PaymentModule):
         # получаем список платежей в статусе оплачивается
         # и которые используют обработчик pmtestpayment
         payments = billmgr.db.db_query(f'''
-            SELECT p.id FROM payment p
+            SELECT p.id, p.xmlparams, p.externalid, p.info FROM payment p
             JOIN paymethod pm
             WHERE module = 'pmtestpayment' AND p.status = {payment.PaymentStatus.INPAY.value}
         ''')
 
         for p in payments:
             logger.info(f"change status for payment {p['id']}")
-            payment.set_paid(p['id'], '', f"external_{p['id']}")
+            
+            xmlparams = ET.parse(p['xmlparams'])
+            terminalkey_node = xmlparams.find('./terminalkey')
+            terminalpsw_node = xmlparams.find('./terminalpsw')
+            terminalkey = terminalkey_node.text if terminalkey_node is not None else ''
+            terminalpsw = terminalpsw_node.text if terminalpsw_node is not None else ''
 
+            result = tinkoffapi.check_payment(terminalkey, terminalpsw, p['externalid'])
+
+            if result.success:
+                if result.status == "NEW":
+                    payment.set_in_pay(p['id'], p['info'], p['externalid'])
+                elif result.status == "CANCELED":
+                    payment.set_canceled(p['id'], p['info'], p['externalid'])
+                elif result.status == "CONFIRMED":
+                    payment.set_paid(p['id'], p['info'], p['externalid'])
+            else:
+                payment.set_canceled(p['id'], p['info'], p['externalid'])
 
 TestPaymentModule().Process()
