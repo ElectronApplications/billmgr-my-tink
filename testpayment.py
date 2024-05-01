@@ -21,10 +21,10 @@ class TestPaymentCgi(payment.PaymentCgi):
         terminalpsw = self.paymethod_params["terminalpsw"]
 
         # тут float приходит в рублях, а нужен int в копейках
-        amount_f = self.payment_params["paymethodamount"]
+        amount_f = float(self.payment_params["paymethodamount"])
         amount = int(amount_f * 100)
 
-        request_result = tinkoffapi.init_standard(terminalkey, terminalpsw, amount, self.elid, "Оплата Test", self.success_page, self.fail_page)
+        request_result = tinkoffapi.init_standard(terminalkey, terminalpsw, amount, f"eapps_billmgr_{self.elid}", "Оплата Test", self.success_page, self.fail_page)
 
         logger.info(f"init_standard result {request_result}")
 
