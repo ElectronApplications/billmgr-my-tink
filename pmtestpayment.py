@@ -61,6 +61,8 @@ class TestPaymentModule(payment.PaymentModule):
 
             result = tinkoffapi.check_payment(terminalkey, terminalpsw, p['externalid'])
 
+            logger.info(f"check payment result {result}")
+
             if result.success:
                 if result.status == "NEW":
                     payment.set_in_pay(p['id'], p['info'], p['externalid'])

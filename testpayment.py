@@ -26,7 +26,8 @@ class TestPaymentCgi(payment.PaymentCgi):
 
         request_result = tinkoffapi.init_standard(terminalkey, terminalpsw, amount, self.elid, "Оплата Test", self.success_page, self.fail_page)
 
-        # переводим платеж в статус оплачивается
+        logger.info(f"init_standard result {request_result}")
+
         if request_result.success:
             payment.set_in_pay(self.elid, request_result.to_json(), request_result.payment_id)
         else:
