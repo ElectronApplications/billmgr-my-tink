@@ -1,4 +1,4 @@
-from __future__ import annotations
+from typing import Optional
 import hashlib
 import requests
 from dataclasses import dataclass
@@ -35,14 +35,14 @@ class StandardPaymentRequest:
 class StandardPaymentResponse:
     success: bool
     error_code: int
-    terminal_key: str | None = None
-    status: str | None = None
-    payment_id: int | None = None
-    order_id: str | None = None
-    amount: int | None = None
-    paymentURL: str | None = None
-    message: str | None = None
-    details: str | None = None
+    terminal_key: Optional[str] = None
+    status: Optional[str] = None
+    payment_id: Optional[int] = None
+    order_id: Optional[str] = None
+    amount: Optional[int] = None
+    paymentURL: Optional[str] = None
+    message: Optional[str] = None
+    details: Optional[str] = None
 
 def init_standard(terminal_key: str, password: str, amount: int, order_id: str, description: str, success_url: str, fail_url: str) -> StandardPaymentResponse:
     request = StandardPaymentRequest(terminal_key, amount, order_id, description, success_url, fail_url)
@@ -63,12 +63,12 @@ class CheckPaymentRequest:
 class CheckPaymentResponse:
     success: bool
     error_code: int
-    terminal_key: str | None = None
-    order_id: str | None = None
-    payment_id: str | None = None
-    status: str | None = None
-    message: str | None = None
-    details: str | None = None
+    terminal_key: Optional[str] = None
+    order_id: Optional[str] = None
+    payment_id: Optional[str] = None
+    status: Optional[str] = None
+    message: Optional[str] = None
+    details: Optional[str] = None
     params: any = None
 
 def check_payment(terminal_key: str, password: str, payment_id: int) -> CheckPaymentResponse:
