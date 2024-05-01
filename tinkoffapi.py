@@ -1,6 +1,5 @@
 from __future__ import annotations
 import hashlib
-from typing import List
 import requests
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json, LetterCase
