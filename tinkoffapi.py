@@ -34,7 +34,7 @@ class StandardPaymentRequest:
 @dataclass
 class StandardPaymentResponse:
     success: bool
-    error_code: Optional[int] = None
+    error_code: int
     terminal_key: Optional[str] = None
     status: Optional[str] = None
     payment_id: Optional[int] = None
@@ -62,14 +62,14 @@ class CheckPaymentRequest:
 @dataclass
 class CheckPaymentResponse:
     success: bool
-    error_code: Optional[int] = None
+    error_code: int
     terminal_key: Optional[str] = None
     order_id: Optional[str] = None
     payment_id: Optional[str] = None
     status: Optional[str] = None
     message: Optional[str] = None
     details: Optional[str] = None
-    params: any = None
+    params = None
 
 def check_payment(terminal_key: str, password: str, payment_id: int) -> CheckPaymentResponse:
     request = CheckPaymentRequest(terminal_key, payment_id)

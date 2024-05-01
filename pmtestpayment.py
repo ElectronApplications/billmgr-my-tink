@@ -42,22 +42,27 @@ class TestPaymentModule(payment.PaymentModule):
     def CheckPay(self):
         logger.info("run checkpay")
 
+        paymethod = billmgr.db.db_query(f'''
+            SELECT pm.xmlparams FROM paymethod pm
+            WHERE pm.module = 'pmtestpayment'
+        ''')[0]
+
+        xmlparams = ET.ElementTree(ET.fromstring(paymethod['xmlparams']))
+        terminalkey_node = xmlparams.find('./terminalkey')
+        terminalpsw_node = xmlparams.find('./terminalpsw')
+        terminalkey = terminalkey_node.text if terminalkey_node is not None else ''
+        terminalpsw = terminalpsw_node.text if terminalpsw_node is not None else ''
+
         # получаем список платежей в статусе оплачивается
         # и которые используют обработчик pmtestpayment
         payments = billmgr.db.db_query(f'''
-            SELECT p.id, p.xmlparams, p.externalid, p.info FROM payment p
+            SELECT p.id, p.externalid, p.info FROM payment p
             JOIN paymethod pm
             WHERE module = 'pmtestpayment' AND p.status = {payment.PaymentStatus.INPAY.value}
         ''')
 
         for p in payments:
             logger.info(f"change status for payment {p['id']}")
-            
-            xmlparams = ET.ElementTree(ET.fromstring(p['xmlparams']))
-            terminalkey_node = xmlparams.find('./terminalkey')
-            terminalpsw_node = xmlparams.find('./terminalpsw')
-            terminalkey = terminalkey_node.text if terminalkey_node is not None else ''
-            terminalpsw = terminalpsw_node.text if terminalpsw_node is not None else ''
 
             result = tinkoffapi.check_payment(terminalkey, terminalpsw, p['externalid'])
 
