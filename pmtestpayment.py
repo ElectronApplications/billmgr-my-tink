@@ -33,10 +33,16 @@ class TestPaymentModule(payment.PaymentModule):
 
         terminalkey_node = xml.find('./terminalkey')
         terminalpsw_node = xml.find('./terminalpsw')
+        minamount_node = xml.find('./minamount')
+
         terminalkey = terminalkey_node.text if terminalkey_node is not None else ''
         terminalpsw = terminalpsw_node.text if terminalpsw_node is not None else ''
+        minamount = float(minamount_node.text) if minamount_node is not None else 0.0
 
-        # TODO: проверка валидности терминала?
+        if minamount < 1.0:
+            raise billmgr.exception.XmlException("msg_error_too_small_min_amount")
+
+        # TODO: проверка валидности терминала
 
     # в тестовом примере получаем необходимые платежи
     # и переводим их все в статус 'оплачен'
