@@ -1,6 +1,7 @@
 from typing import Optional
 import hashlib
 import requests
+from enum import Enum
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json, LetterCase
 
@@ -19,6 +20,22 @@ def sign_data(data: dict, password: str) -> dict:
 
     return new_data
 
+class PaymentStatus(Enum):
+    NEW = "NEW"
+    FORM_SHOWED = "FORM_SHOWED"
+    AUTHORIZING = "AUTHORIZING"
+    THREE_DS_CHECKING = "3DS_CHECKING"
+    THREE_DS_CHECKED = "3DS_CHECKED"
+    AUTHORIZED = "AUTHORIZED"
+    CONFIRMING = "CONFIRMING"
+    CONFIRMED = "CONFIRMED"
+    REVERSING = "REVERSING"
+    PARTIAL_REVERSED = "PARTIAL_REVERSED"
+    REFUNDED = "REFUNDED"
+    СANCELED = "СANCELED"
+    DEADLINE_EXPIRED = "DEADLINE_EXPIRED"
+    REJECTED = "REJECTED"
+    AUTH_FAIL = "AUTH_FAIL"
 
 @dataclass_json(letter_case=LetterCase.PASCAL)
 @dataclass
@@ -36,7 +53,7 @@ class StandardPaymentResponse:
     success: bool
     error_code: int
     terminal_key: Optional[str] = None
-    status: Optional[str] = None
+    status: Optional[PaymentStatus] = None
     payment_id: Optional[int] = None
     order_id: Optional[str] = None
     amount: Optional[int] = None
@@ -66,7 +83,7 @@ class CheckPaymentResponse:
     terminal_key: Optional[str] = None
     order_id: Optional[str] = None
     payment_id: Optional[str] = None
-    status: Optional[str] = None
+    status: Optional[PaymentStatus] = None
     message: Optional[str] = None
     details: Optional[str] = None
     params = None

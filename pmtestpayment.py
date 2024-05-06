@@ -8,6 +8,7 @@ import billmgr.logger as logging
 
 import xml.etree.ElementTree as ET
 import tinkoffapi
+from tinkoffapi import PaymentStatus
 
 MODULE = 'payment'
 logging.init_logging('pmtestpayment')
@@ -65,16 +66,18 @@ class TestPaymentModule(payment.PaymentModule):
                 logger.info(f"check payment result {result}")
 
                 if result.success:
-                    if result.status == "NEW":
+                    if result.status == PaymentStatus.NEW or result.status == PaymentStatus.FORM_SHOWED:
                         payment.set_in_pay(p['id'], p['info'], p['externalid'])
-                    elif result.status == "CANCELED":
+                    elif result.status == PaymentStatus.СANCELED:
                         payment.set_canceled(p['id'], p['info'], p['externalid'])
-                    elif result.status == "CONFIRMED":
+                    elif result.status == PaymentStatus.CONFIRMED:
                         payment.set_paid(p['id'], p['info'], p['externalid'])
+                    elif result.status == PaymentStatus.REJECTED or result.status == PaymentStatus.AUTH_FAIL:
+                        payment.set_fraud(p['id'], p['info'], p['externalid'])
                     else:
                         payment.set_canceled(p['id'], p['info'], p['externalid'])
                 else:
-                    payment.set_canceled(p['id'], p['info'], p['externalid'])
+                    payment.set_fraud(p['id'], p['info'], p['externalid'])
             except Exception as error:
                 logger.info(f"payment {p['id']} exception {error}")
 
