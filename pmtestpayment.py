@@ -33,7 +33,7 @@ class TestPaymentModule(payment.PaymentModule):
 
         terminalkey_node = xml.find('./terminalkey')
         terminalpsw_node = xml.find('./terminalpsw')
-        minamount_node = xml.find('./minamount')
+        minamount_node = xml.find('./paymethod/minamount')
 
         terminalkey = terminalkey_node.text if terminalkey_node is not None else ''
         terminalpsw = terminalpsw_node.text if terminalpsw_node is not None else ''
