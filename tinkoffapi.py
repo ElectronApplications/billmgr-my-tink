@@ -15,10 +15,9 @@ def sign_data(data: dict, password: str) -> dict:
     values = "".join([str(x[1]) for x in fields])
     token = hashlib.sha256(bytes(values, encoding="utf-8"))
 
-    new_data = data.copy()
-    new_data["Token"] = token.hexdigest()
+    data["Token"] = token.hexdigest()
 
-    return new_data
+    return data
 
 class PaymentStatus(Enum):
     NEW = "NEW"
