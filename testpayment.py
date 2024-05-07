@@ -29,7 +29,7 @@ class TestPaymentCgi(payment.PaymentCgi):
         logger.info(f"init_standard result {request_result}")
 
         if request_result.success:
-            payment.set_in_pay(self.elid, request_result.to_json(), request_result.payment_id)
+            payment.set_in_pay(self.elid, request_result.to_json(), f"{request_result.payment_id}")
         else:
             payment.set_canceled(self.elid, request_result.to_json(), "")
 

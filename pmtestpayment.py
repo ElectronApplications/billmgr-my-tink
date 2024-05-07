@@ -67,7 +67,7 @@ class TestPaymentModule(payment.PaymentModule):
                 terminalkey = terminalkey_node.text if terminalkey_node is not None else ''
                 terminalpsw = terminalpsw_node.text if terminalpsw_node is not None else ''
 
-                result = tinkoffapi.check_payment(terminalkey, terminalpsw, p['externalid'])
+                result = tinkoffapi.check_payment(terminalkey, terminalpsw, int(p['externalid']))
 
                 logger.info(f"check payment result {result}")
 
